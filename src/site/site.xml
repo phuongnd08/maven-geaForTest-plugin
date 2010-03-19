@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Maven GAE Plugin">
+  <!--
+  <bannerLeft>
+    <name>Maven GAE Plugin</name>
+    <src>http://maven.apache.org/images/apache-maven-project.png</src>
+    <href>http://code.google.com/p/maven-gae-plugin/</href>
+  </bannerLeft>
+  -->
+  <bannerRight>
+    <name>Maven GAE Plugin</name>
+    <src>images/maven-gae-plugin-logo-small.png</src>
+    <href>index.html</href>
+  </bannerRight>
+  <body>
+    <links>
+      <item name="Google App Engine" href="http://code.google.com/appengine"/>
+      <item name="Google Web Toolkit" href="http://code.google.com/webtoolkit"/>
+      <item name="Google Eclipse Plugin" href="http://code.google.com/intl/en/eclipse"/>
+      <item name="Maven" href="http://maven.apache.org"/>
+    </links>
+    <menu name="Get Plugin">
+      <item name="Google Code" href="http://code.google.com/p/maven-gae-plugin"/>
+    </menu>
+    <menu name="Overview">
+      <item name="Index" href="index.html"/>
+      <item name="Goals" href="plugin-info.html"/>
+      <item name="Usage" href="usage.html"/>
+      <item name="FAQ" href="faq.html"/>
+      <item name="Examples" href="examples/index.html"/>
+    </menu>
+    <menu name="IDE integration">
+      <item name="Eclipse" href="eclipse/google_plugin.html"/>
+    </menu>
+    <!--
+    <menu name="Examples">
+      <item name="compile a GWT module" href="examples/compile.html"/>
+      <item name="generate async interfaces" href="examples/asyn.html"/>
+      <item name="generate i18n bundles interfaces" href="examples/i18n.html"/>
+    </menu>
+    -->
+    <menu ref="reports"/>
+  </body>
+</project>

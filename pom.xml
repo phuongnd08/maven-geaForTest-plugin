@@ -1,0 +1,290 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>net.kindleit</groupId>
+	<artifactId>maven-gae-plugin</artifactId>
+	<packaging>maven-plugin</packaging>
+	<version>0.5.7-SNAPSHOT</version>
+
+	<name>Maven GAE Plugin</name>
+	<description>Maven plugin for the Google App Engine</description>
+  <inceptionYear>2009</inceptionYear>
+	<url>http://www.kindleit.net/maven_gae_plugin/</url>
+  
+  <licenses>
+    <license>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <name>Apache 2.0</name>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  
+  <organization>
+    <name>KindleIT</name>
+    <url>http://www.kindleit.net</url>
+  </organization>
+   
+  <developers>
+    <developer>
+      <id>kryptt</id>
+      <name>Rodolfo Hansen</name>
+      <email>kryptt@gmail.com</email>
+    </developer>
+    <developer>
+      <id>argenijam</id>
+    </developer>
+    <developer>
+      <id>mangrar</id>
+      <name>Manuel Grau</name>
+      <email>mangrar@gmail.com</email>
+    </developer>
+    <developer>
+      <id>androns</id>
+      <name>Andris Rauda</name>
+      <email>androns@gmail.com</email>
+    </developer>
+  </developers>
+  <!--
+  <contributors>
+    <contributor>
+      <name></name>
+    </contributor>
+  </contributors>
+  -->
+  
+  <mailingLists>
+    <mailingList>
+      <name>maven-gae-plugin</name>
+      <subscribe>maven-gae-plugin-subscribe@googlegroups.com</subscribe>
+      <unsubscribe>maven-gae-plugin+unsubscribe@googlegroups.com</unsubscribe>
+      <post>maven-gae-plugin@googlegroups.com</post>
+      <archive>http://groups.google.com/group/maven-gae-plugin</archive>
+    </mailingList>
+  </mailingLists>
+  
+  <issueManagement>
+    <system>Google Code</system>
+    <url>http://code.google.com/p/maven-gae-plugin/issues/list</url>
+  </issueManagement>
+
+	<properties>
+		<maven.plugin.version>2.2.1</maven.plugin.version>
+		<junit.version>3.8.2</junit.version>
+		<gae.version>1.3.1</gae.version>
+		<ant.version>1.7.1</ant.version>
+    <gae.base>
+      ${settings.localRepository}/com/google/appengine/appengine-java-sdk/${gae.version}
+    </gae.base>
+    <gae.home>
+       ${gae.base}/appengine-java-sdk-${gae.version}
+    </gae.home>
+	</properties>
+
+	<build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <extensions>
+      <extension>
+        <groupId>org.jvnet.wagon-svn</groupId>
+        <artifactId>wagon-svn</artifactId>
+        <version>1.9</version>
+      </extension>
+    </extensions>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+					<showDeprecation>true</showDeprecation>
+					<showWarnings>true</showWarnings>
+				</configuration>
+			</plugin>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.0-beta-9</version>
+        <configuration>
+          <releaseProfiles>release</releaseProfiles>
+          <goals>deploy</goals>
+        </configuration>
+      </plugin>
+		</plugins>
+	</build>
+
+	<scm>
+		<connection>scm:svn:http://maven-gae-plugin.googlecode.com/svn/trunk</connection>
+		<developerConnection>scm:svn:https://maven-gae-plugin.googlecode.com/svn/trunk</developerConnection>
+		<url>http://code.google.com/p/maven-gae-plugin/source/browse/trunk</url>
+	</scm>
+
+	<repositories>
+	    <repository>
+        <id>maven-gae-plugin-repo</id>
+        <name>Maven GAE Pugin Repository</name>
+        <url>http://maven-gae-plugin.googlecode.com/svn/repository/</url>
+        <releases><enabled>true</enabled></releases>
+        <snapshots><enabled>true</enabled></snapshots>
+      </repository>
+      <repository>
+        <id>maven2-repository.dev.java.net</id>
+        <name>Java.net Repository for Maven</name>
+        <url>http://download.java.net/maven/2/</url>
+        <releases><enabled>true</enabled></releases>
+        <snapshots><enabled>true</enabled></snapshots>
+    </repository>   
+	</repositories>
+
+	<distributionManagement>
+		<downloadUrl>http://code.google.com/p/maven-gae-plugin/downloads/list</downloadUrl>
+    <repository>
+			<id>maven-gae-deploy</id>
+      <uniqueVersion>false</uniqueVersion>
+      <url>svn:https://maven-gae-plugin.googlecode.com/svn/repository</url>
+    </repository>
+	</distributionManagement>
+
+  <dependencies>
+    <!-- Google App Engine API -->
+    <dependency>
+      <groupId>com.google.appengine</groupId>
+      <artifactId>appengine-api-1.0-sdk</artifactId>
+      <version>${gae.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-archiver</artifactId>
+      <version>1.0-alpha-11</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.codehaus.plexus</groupId>
+          <artifactId>plexus-container-default</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.codehaus.plexus</groupId>
+          <artifactId>plexus-component-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!-- Google App Engine Runtime Dependencies -->
+    <dependency>
+      <groupId>com.google.appengine</groupId>
+      <artifactId>geronimo-jta_1.1_spec</artifactId>
+      <version>1.1.1</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.appengine</groupId>
+      <artifactId>jdo2-api</artifactId>
+      <version>2.3-eb</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.appengine</groupId>
+      <artifactId>geronimo-jpa_3.0_spec</artifactId>
+      <version>1.1.1</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.appengine.orm</groupId>
+      <artifactId>datanucleus-appengine</artifactId>
+      <version>1.0.5.final</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <!--<groupId>com.google.appengine</groupId>-->
+      <groupId>org.datanucleus</groupId>
+      <artifactId>datanucleus-core</artifactId>
+      <version>1.1.5</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.transaction</groupId>
+          <artifactId>transaction-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <version>1.1</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.appengine</groupId>
+      <artifactId>datanucleus-jpa</artifactId>
+      <version>1.1.5</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <!-- App Engine Runtime Dependencies-->
+    <dependency>
+      <groupId>com.google.appengine</groupId>
+      <artifactId>appengine-local-runtime</artifactId>
+      <version>${gae.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- <dependency>
+      <groupId>com.google.appengine</groupId>
+      <artifactId>appengine-api-stubs</artifactId>
+      <version>${gae.version}</version>
+      <scope>runtime</scope>
+    </dependency> -->
+
+    <dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>${ant.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant-launcher</artifactId>
+      <version>${ant.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.appengine</groupId>
+      <artifactId>appengine-tools-api</artifactId>
+      <version>${gae.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-project</artifactId>
+      <version>${maven.plugin.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-plugin-api</artifactId>
+      <version>${maven.plugin.version}</version>
+    </dependency>
+
+    <!-- TODO there are no tests yet
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope> 
+    </dependency>
+    -->
+  </dependencies>
+  
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-plugin-plugin</artifactId>
+				<version>2.5.1</version>
+			</plugin>
+		</plugins>
+	</reporting>
+
+</project>

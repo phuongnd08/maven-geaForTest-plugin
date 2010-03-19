@@ -1,0 +1,82 @@
+ ------
+Maven GAE Plugin Usage
+ ------
+ ------
+ ------
+
+Configuring Maven GAE Plugin
+
+* Creating new project.
+
+ You can easily generate new GAE project with out-of-box persistence, unit-tests 
+ and GWT from an archetype. To do that, just type in command like this:
+
++---+
+mvn archetype:create\
+ -DarchetypeGroupId=net.kindleit\
+ -DarchetypeArtifactId=gae-archetype-gwt\
+ -DarchetypeVersion=0.5.0\
+ -DgroupId=your.groupId\
+ -DartifactId=your-artifactId\
+ -DremoteRepositories=http://maven-gae-plugin.googlecode.com/svn/repository
++---+
+
+* Patching existing project. 
+
+ The basic thing to do is to add maven-gae-plugin to the plugin section:
+
++---+
+<project>
+    [...]
+    <build>
+        <plugins>
+            [...]
+            <plugin>
+                <groupId>net.kindleit</groupId>
+                <artifactId>maven-gae-plugin</artifactId>
+                <version>[plugin version]</version>
+            </plugin>
+        </plugins>
+    </build>
+    [...]
+</project>
++---+
+
+ However, currently, GAE SDK (and thus maven-gae-plugin) require some artifacts, which are not 
+ available in any of the public repositories 'as is'. So it doesn't make much sense to push
+ maven-gae-plugin to the central Maven repository either.
+ 
+ For now, you have to add maven-gae-plugin's repository both as the dependency and 
+ the plugin repository like this:
+ 
++---+
+<project>
+    [...]
+    <repositories>
+        [...]
+        <repository>
+            <id>maven-gae-plugin-repo</id>
+            <name>maven-gae-plugin repository</name>
+            <url>
+                http://maven-gae-plugin.googlecode.com/svn/repository
+            </url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        [...]
+        <pluginRepository>
+            <id>maven-gae-plugin-repo</id>
+            <name>maven-gae-plugin repository</name>
+            <url>
+                http://maven-gae-plugin.googlecode.com/svn/repository
+            </url>
+        </pluginRepository>
+    </pluginRepositories>
+    [...]
+</project>
++---+
+ 
+ See the {{{examples/index.html}examples}} page for tips on configuring 
+ the persistence, it's unit-testing and GWT.
+ 

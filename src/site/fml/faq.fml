@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faqs id="FAQ" title="Frequently Asked Questions">
+  <part id="General">
+    <faq id="question">
+      <question>How to use Maven GAE Plugin with Google Eclipse Plugin?</question>
+      <answer>
+        <p>
+          See the <a href="eclipse/google_plugin.html">Eclipse section</a>.
+        </p>
+      </answer>
+    </faq>
+  </part>
+</faqs>

@@ -1,0 +1,213 @@
+ ------
+ Examples
+ ------
+ ------
+
+Examples
+
+* Using persistence.
+
+ Our test projects work with the following set of dependencies:
+
++---+
+<project>
+    [...]
+    <dependencies>
+        [...]
+        <!--
+            jars from GAE's "lib/user" must be added as compile-time
+            dependencies, as described here in "Copying JARs" section:
+            http://code.google.com/appengine/docs/java/tools/ant.html
+        -->
+        <dependency>
+            <groupId>javax.jdo</groupId>
+            <artifactId>jdo2-api</artifactId>
+            <version>2.3-eb</version>
+            <exclusions>
+                <!--
+                    exclude the legacy javax.transaction:transaction-api
+                    and replace it with javax.transaction:jta (it
+                    appears to be the same thing)
+                -->
+                <exclusion>
+                    <groupId>javax.transaction</groupId>
+                    <artifactId>transaction-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>jta</artifactId>
+            <version>1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.appengine.orm</groupId>
+            <artifactId>datanucleus-appengine</artifactId>
+            <version>1.0.4.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.datanucleus</groupId>
+            <artifactId>datanucleus-core</artifactId>
+            <version>1.1.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.transaction</groupId>
+                    <artifactId>transaction-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.appengine</groupId>
+            <artifactId>datanucleus-jpa</artifactId>
+            <version>1.1.5</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.appengine</groupId>
+            <artifactId>geronimo-jpa_3.0_spec</artifactId>
+            <version>1.1.1</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.appengine</groupId>
+            <artifactId>appengine-api-1.0-sdk</artifactId>
+            <version>${gae.version}</version>
+        </dependency>
+    </dependencies>
+    [...]
+    <properties>
+        [...]
+        <gae.version>1.3.0</gae.version>
+    </properties>
+</project>
++---+
+
+ Besides, you have to set up DataNucleus' "enhancement" using the 
+ {{{http://www.datanucleus.org/products/accessplatform_1_0/guides/maven2/index.html}maven-datanucleus-plugin}}
+ like this:
+
++---+
+<project>
+    [...] 
+    <plugins>
+        <!--
+            This plug-in "enhances" your domain model objects (i.e.
+            makes them persistent for datanucleus)
+        -->
+        <plugin>
+            <groupId>org.datanucleus</groupId>
+            <artifactId>maven-datanucleus-plugin</artifactId>
+            <version>1.1.4</version>
+            <configuration>
+                <!--
+                    Make sure this path contains your persistent
+                    classes!
+                -->
+                <mappingIncludes>**/model/*.class</mappingIncludes>
+                <verbose>true</verbose>
+                <enhancerName>ASM</enhancerName>
+                <api>JDO</api>
+            </configuration>
+            <executions>
+                <execution>
+                    <phase>compile</phase>
+                    <goals>
+                        <goal>enhance</goal>
+                    </goals>
+                </execution>
+            </executions>
+            <dependencies>
+                <dependency>
+                    <groupId>org.datanucleus</groupId>
+                    <artifactId>datanucleus-core</artifactId>
+                    <version>1.1.5</version>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>javax.transaction</groupId>
+                            <artifactId>transaction-api</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+                <dependency>
+                    <groupId>org.datanucleus</groupId>
+                    <artifactId>datanucleus-rdbms</artifactId>
+                    <version>1.1.5</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.datanucleus</groupId>
+                    <artifactId>datanucleus-enhancer</artifactId>
+                    <version>1.1.4</version>
+                </dependency>
+            </dependencies>
+        </plugin>
+    </plugins>
+    [...]
+</project>
++---+
+
+ For more information on persistence, read the {{{http://code.google.com/appengine/docs/java/datastore/}Google App Engine Documentation - Datastore}}.
+
+* Unit-testing persistence.
+
+ Unit-testing the persistence layer requires some additional dependencies:
+ 
++---+
+<project>
+    [...]
+    <dependencies>
+        [...]
+         <!--
+            GAE libraries for local testing as described here:
+            http://code.google.com/appengine/docs/java/howto/unittesting.html
+        -->
+        <dependency>
+            <groupId>com.google.appengine</groupId>
+            <artifactId>appengine-api-labs</artifactId>
+            <version>${gae.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.appengine</groupId>
+            <artifactId>appengine-api-stubs</artifactId>
+            <version>${gae.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.appengine</groupId>
+            <artifactId>appengine-local-runtime</artifactId>
+            <version>${gae.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    [...]
+</project>
++---+
+
+ You also need to create mock environment class like 
+ {{{http://maven-gae-plugin.googlecode.com/svn/example/gwt-persistence-app/src/test/java/com/google/apphosting/api/MockEnvironment.java}this}}.
+
+ Again, see the {{{http://code.google.com/appengine/docs/java/howto/unittesting.html}Google App Engine Documentation - Unit-testing}} for more details.
+ 
+* Using GWT.
+
+ GWT compilation can be done by using Codehaus' 
+ {{{http://mojo.codehaus.org/gwt-maven-plugin/index.html}gwt-maven-plugin}}. Please refer their own 
+ documentation, as it is very well written and running GWT on GAE does not require any additional steps.
+
+* More examples.
+
+ For more details, check out the example project sources from SVN:
+
+ * {{{http://maven-gae-plugin.googlecode.com/svn/example/jsp-persistence-app}Plain JSP based example}}
+  
+ * {{{http://maven-gae-plugin.googlecode.com/svn/example/wicket-app}Wicket based example}} 
+ 
+ * {{{http://maven-gae-plugin.googlecode.com/svn/example/gwt-persistence-app}GWT based example}} 
