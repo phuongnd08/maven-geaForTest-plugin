@@ -16,6 +16,7 @@ package org.seamoo.gaeForTest;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -27,9 +28,6 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
-
-import com.google.appengine.tools.KickStart;
-import com.google.appengine.tools.admin.AppCfg;
 
 /**
  * Base MOJO class for working with the Google App Engine SDK.
@@ -138,50 +136,7 @@ public abstract class EngineGoalBase extends AbstractMojo {
 		}
 	}
 
-	/**
-	 * Passes command to the Google App Engine AppCfg runner.
-	 * 
-	 * @param command
-	 *            command to run through AppCfg
-	 * @param commandArguments
-	 *            arguments to the AppCfg command.
-	 * @throws MojoExecutionException
-	 *             If {@link #assureSystemProperties()} fails
-	 */
-	protected final void runAppCfg(final String command,
-			final String... commandArguments) throws MojoExecutionException {
-
-		final List<String> args = new ArrayList<String>();
-		args.addAll(getAppCfgArgs());
-		args.add(command);
-		args.addAll(Arrays.asList(commandArguments));
-		assureSystemProperties();
-		AppCfg.main(args.toArray(ARG_TYPE));
-	}
-
-	/**
-	 * Passes command to the Google App Engine KickStart runner.
-	 * 
-	 * @param startClass
-	 *            command to run through KickStart
-	 * @param commandArguments
-	 *            arguments to the KickStart command.
-	 * @throws MojoExecutionException
-	 *             If {@link #assureSystemProperties()} fails
-	 */
-	protected final void runKickStart(final String startClass,
-			final String... commandArguments) throws MojoExecutionException {
-
-		final List<String> args = new ArrayList<String>();
-		args.add(startClass);
-		args.addAll(getCommonArgs());
-		args.addAll(Arrays.asList(commandArguments));
-
-		assureSystemProperties();
-		KickStart.main(args.toArray(ARG_TYPE));
-	}
-
-	protected final void runKickStartAsync(final String startClass,
+	protected final InputStream runGAEStarterAsync(final String startClass,
 			final String... commandArguments) throws MojoExecutionException {
 
 		final List<String> args = new ArrayList<String>();
@@ -191,34 +146,17 @@ public abstract class EngineGoalBase extends AbstractMojo {
 
 		assureSystemProperties();
 
-		Thread kickStartThread = new Thread(new Runnable() {
+		final GAEStarter starter = new GAEStarter(args.toArray(ARG_TYPE));
+
+		Thread GAEStarterThread = new Thread(new Runnable() {
 
 			public void run() {
 				// TODO Auto-generated method stub
-
-				Constructor<KickStart> kStartCtor = ReflectionUtils
-						.getConstructor(KickStart.class, 1);
-				try {
-					KickStart kickStart = kStartCtor
-							.newInstance(new Object[] { args.toArray(ARG_TYPE) });
-				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InstantiationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} // equivalent
-				// to
-				// KickStart.main(args.toArray(ARG_TYPE));
+				starter.waitForServerToBeTerminated();
 			}
 		});
-		kickStartThread.start();
+		GAEStarterThread.start();
+		return starter.getServerProcess().getInputStream();
 	}
 
 	/**
@@ -248,7 +186,7 @@ public abstract class EngineGoalBase extends AbstractMojo {
 		}
 
 		// hack for getting appengine-tools-api.jar on a runtime classpath
-		// (KickStart checks java.class.path system property for classpath
+		// (GAEStarter checks java.class.path system property for classpath
 		// entries)
 		final String classpath = System.getProperty("java.class.path");
 		final String toolsJar = sdkDir + "/lib/appengine-tools-api.jar";

@@ -32,7 +32,7 @@ public class StopGoal extends AbstractMojo {
 	/**
 	 * Number of seconds to delay.
 	 * 
-	 * @parameter expression="${seconds}" default-value="30"
+	 * @parameter expression="${seconds}" default-value="1"
 	 */
 	protected int seconds;
 

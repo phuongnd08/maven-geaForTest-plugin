@@ -2,8 +2,8 @@ package org.seamoo.gaeForTest;
 
 import java.lang.reflect.Constructor;
 
-public final class ReflectionUtils {
-	public static final <T> Constructor<T> getConstructor(Class<T> clz,
+public final class ConstructorUtils {
+	public static final <T> Constructor<T> findConstructor(Class<T> clz,
 			int parameterLength) {
 
 		Constructor[] ctors = clz.getDeclaredConstructors();
