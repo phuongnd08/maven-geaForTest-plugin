@@ -17,6 +17,7 @@ package org.seamoo.gaeForTest;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
+
+import com.google.appengine.tools.admin.OutputPump;
 
 /**
  * Base MOJO class for working with the Google App Engine SDK.
@@ -134,6 +137,27 @@ public abstract class EngineGoalBase extends AbstractMojo {
 		} catch (final IOException e) {
 			throw new RuntimeException("Unable to load version", e);
 		}
+	}
+
+	protected final void runGAEStarter(final String startClass,
+			final String... commandArguments) throws MojoExecutionException {
+
+		final List<String> args = new ArrayList<String>();
+		args.add(startClass);
+		args.addAll(getCommonArgs());
+		args.addAll(Arrays.asList(commandArguments));
+
+		assureSystemProperties();
+
+		final GAEStarter starter = new GAEStarter(args.toArray(ARG_TYPE));
+
+		//redirect the server output to current output
+		(new Thread(new OutputPump(starter.getServerProcess().getInputStream(),
+				new PrintWriter(System.out, true)))).start();
+		(new Thread(new OutputPump(starter.getServerProcess().getErrorStream(),
+				new PrintWriter(System.err, true)))).start();
+
+		starter.waitForServerToBeTerminated();
 	}
 
 	protected final InputStream runGAEStarterAsync(final String startClass,
