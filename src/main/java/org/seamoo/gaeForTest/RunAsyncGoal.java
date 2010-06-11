@@ -14,14 +14,12 @@
  */
 package org.seamoo.gaeForTest;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -66,7 +64,6 @@ public class RunAsyncGoal extends EngineGoalBase {
 	 * @parameter
 	 */
 	protected List<String> jvmFlags;
-
 	private final String StartedSignal = "The server is running at http://localhost:%d/";
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -89,35 +86,39 @@ public class RunAsyncGoal extends EngineGoalBase {
 				"com.google.appengine.tools.development.DevAppServerMain",
 				arguments.toArray(new String[] {}));
 
+		(new Thread(new OutputPump(serverInputStream, new PrintWriter(
+				System.out, true)))).start();
+
 		getLog().info("Waiting for server to be ready");
 		try {
-			waitForString(serverInputStream, String.format(StartedSignal, port));
+			waitForWebServer(port);
 			getLog().info("Server is ready");
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			getLog().info("Error while waiting for server");
 		}
-		(new Thread(new OutputPump(serverInputStream, new PrintWriter(
-				System.out, true)))).start();
 
 	}
 
-	private void waitForString(InputStream stream, String str)
-			throws IOException {
-		int ch = 0;
-		StringBuilder strBuilder = new StringBuilder();
-		while (ch != -1) {
-			ch = stream.read();
-			if (ch != -1)
-				strBuilder.append((char) ch);// may be risky if the string
-			// is on the last line and
-			// the new line won't be
-			// produced for quite long
-			// time
-			if (strBuilder.toString().contains(str)) {
-				getLog().info(strBuilder.toString());
-				return;
+	private void waitForWebServer(int port) throws IOException {
+		boolean portTaken = false;
+		while (!portTaken) {
+			ServerSocket socket = null;
+			try {
+				socket = new ServerSocket(port);
+			} catch (IOException e) {
+				portTaken = true;
+			} finally {
+				if (socket != null)
+					socket.close();
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return;
+				}
 			}
 		}
 

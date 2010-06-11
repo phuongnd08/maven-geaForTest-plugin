@@ -104,7 +104,7 @@ public class GAEStarter {
 		command.add(newClassPath.toString());
 		command.add(entryClass);
 		command.addAll(absoluteAppServerArgs);
-		logger.fine((new StringBuilder()).append("Executing ").append(command)
+		logger.info((new StringBuilder()).append("Executing ").append(command)
 				.toString());
 
 		Runtime.getRuntime().addShutdownHook(new Thread() {
